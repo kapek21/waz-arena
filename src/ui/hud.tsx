@@ -128,7 +128,14 @@ export function Overlays(props: OverlayProps): JSX.Element {
       {snap?.phase === 'paused' && (
         <Modal title="Pauza" kicker="Chwila oddechu">
           <img src={ASSET.helper} alt="" className="mx-auto h-24 w-24 object-contain" />
-          <button type="button" className="toy-btn toy-btn-green w-full px-6" onClick={props.onPause}>
+          <button
+            type="button"
+            className="toy-btn toy-btn-green w-full px-6"
+            onPointerDown={(e) => {
+              e.preventDefault();
+              props.onPause();
+            }}
+          >
             Wznów
           </button>
         </Modal>
@@ -158,7 +165,14 @@ export function Overlays(props: OverlayProps): JSX.Element {
             </div>
           </dl>
           {props.allowRestart ? (
-            <button type="button" className="toy-btn toy-btn-green w-full px-6" onClick={props.onRestart}>
+            <button
+              type="button"
+              className="toy-btn toy-btn-green w-full px-6"
+              onPointerDown={(e) => {
+                e.preventDefault();
+                props.onRestart();
+              }}
+            >
               Jeszcze raz
             </button>
           ) : (
@@ -210,11 +224,26 @@ function Menu({
         </p>
         {launchError && <p className="mt-2 text-sm font-extrabold text-[#e40058]">{launchError}</p>}
         <div className="mt-5 flex w-full flex-col gap-3 sm:flex-row">
-          <button type="button" className="toy-btn w-full px-4 text-lg" disabled={bosLocked} onClick={onStart}>
+          <button
+            type="button"
+            className="toy-btn w-full px-4 text-lg"
+            disabled={bosLocked}
+            onPointerDown={(e) => {
+              e.preventDefault();
+              onStart();
+            }}
+          >
             Graj 3 min ▶
           </button>
           {!bosLocked && allowPractice && (
-            <button type="button" className="toy-btn toy-btn-yellow w-full px-4 text-lg" onClick={onPractice}>
+            <button
+              type="button"
+              className="toy-btn toy-btn-yellow w-full px-4 text-lg"
+              onPointerDown={(e) => {
+                e.preventDefault();
+                onPractice();
+              }}
+            >
               Practice Lab ⚙
             </button>
           )}
