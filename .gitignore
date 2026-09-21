@@ -1,0 +1,10 @@
+node_modules
+dist
+.vercel
+.DS_Store
+*.log
+.vite
+provider-backend/.env
+provider-backend/.pids
+provider-backend/node_modules
+provider-backend/dist
