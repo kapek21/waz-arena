@@ -25,8 +25,13 @@ import {
 } from './scoring.js';
 import { buildWalls, freeCells, inBounds, key, occupiedSet } from './map.js';
 
-function onBody(body: Cell[], x: number, y: number): boolean {
-  return body.some((c) => c.x === x && c.y === y);
+function occupies(body: Cell[], x: number, y: number, includeTail: boolean): boolean {
+  const last = includeTail ? body.length : Math.max(0, body.length - 1);
+  for (let i = 0; i < last; i++) {
+    const c = body[i]!;
+    if (c.x === x && c.y === y) return true;
+  }
+  return false;
 }
 
 function inRisk(s: SimState, x: number, y: number): boolean {
@@ -35,9 +40,11 @@ function inRisk(s: SimState, x: number, y: number): boolean {
 }
 
 function spawnStart(): Cell[] {
+  const headX = 6;
+  const y = 8;
   const body: Cell[] = [];
-  for (let i = START_LENGTH - 1; i >= 0; i--) {
-    body.push({ x: 4 - i, y: 8 });
+  for (let i = 0; i < START_LENGTH; i++) {
+    body.push({ x: headX - i, y });
   }
   return body;
 }
@@ -76,7 +83,7 @@ function wallAdjacent(s: SimState, x: number, y: number): number {
   for (const d of Object.values(DIR_VEC)) {
     const nx = x + d.x;
     const ny = y + d.y;
-    if (!inBounds(nx, ny) || s.walls[ny]![nx] || onBody(s.body, nx, ny)) n += 1;
+    if (!inBounds(nx, ny) || s.walls[ny]![nx] || occupies(s.body, nx, ny, true)) n += 1;
   }
   return n;
 }
@@ -89,7 +96,7 @@ function validDirs(body: Cell[], walls: boolean[][], dir: Dir): Dir[] {
     if (d === OPPOSITE[dir]) continue;
     const n = { x: head.x + DIR_VEC[d].x, y: head.y + DIR_VEC[d].y };
     if (!inBounds(n.x, n.y) || walls[n.y]![n.x]) continue;
-    if (onBody(body.slice(0, -1), n.x, n.y)) continue;
+    if (occupies(body, n.x, n.y, false)) continue;
     out.push(d);
   }
   return out;
@@ -207,7 +214,7 @@ function stepPlayer(s: SimState): void {
   const head = s.body[0]!;
   const nx = head.x + DIR_VEC[s.dir].x;
   const ny = head.y + DIR_VEC[s.dir].y;
-  if (!inBounds(nx, ny) || s.walls[ny]![nx] || onBody(s.body, nx, ny)) {
+  if (!inBounds(nx, ny) || s.walls[ny]![nx] || occupies(s.body, nx, ny, false)) {
     s.died = true;
     s.phase = 'ko';
     s.survival = survivalBonus(s.elapsedMs, true);
@@ -228,6 +235,13 @@ function stepPlayer(s: SimState): void {
 export function createSim(seed: number, phase: Extract<Phase, 'playing' | 'practice'>): SimState {
   const walls = buildWalls(seed);
   const body = spawnStart();
+  for (const c of body) {
+    if (walls[c.y]) walls[c.y]![c.x] = false;
+  }
+  const ahead = body[0]!;
+  for (let x = ahead.x; x <= ahead.x + 3 && x < COLS - 1; x++) {
+    walls[ahead.y]![x] = false;
+  }
   const ghost = [
     { x: 14, y: 8 },
     { x: 13, y: 8 },

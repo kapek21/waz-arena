@@ -28,7 +28,7 @@ export function buildWalls(seed: number): boolean[][] {
     guard += 1;
     const x = pickInt(rand, 2, COLS - 3);
     const y = pickInt(rand, 2, ROWS - 3);
-    if (y >= 6 && y <= 9 && x >= 2 && x <= 8) continue;
+    if (y >= 6 && y <= 10 && x >= 1 && x <= 12) continue;
     if (walls[y]![x]) continue;
     walls[y]![x] = true;
     placed += 1;
