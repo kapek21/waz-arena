@@ -111,18 +111,7 @@ function App(): JSX.Element {
         {playing && hud && <StatsDeck snap={hud} onPause={onPause} />}
         <div ref={stageRef} className="game-stage">
           <div ref={boardWrapRef} className="game-frame">
-            <canvas ref={canvasRef} />
-            <Overlays
-              snap={hud}
-              bosLocked={platform.attemptLocked}
-              allowPractice={platform.mode !== 'bos'}
-              allowRestart={platform.mode !== 'bos'}
-              launchError={err}
-              onStart={() => start(false)}
-              onPractice={() => start(true)}
-              onPause={onPause}
-              onRestart={() => start(hud?.kind === 'practice')}
-            />
+            <canvas ref={canvasRef} width={400} height={320} />
           </div>
         </div>
         {playing && hud && (
@@ -134,6 +123,17 @@ function App(): JSX.Element {
           />
         )}
       </div>
+      <Overlays
+        snap={hud}
+        bosLocked={platform.attemptLocked}
+        allowPractice={platform.mode !== 'bos'}
+        allowRestart={platform.mode !== 'bos'}
+        launchError={err}
+        onStart={() => start(false)}
+        onPractice={() => start(true)}
+        onPause={onPause}
+        onRestart={() => start(hud?.kind === 'practice')}
+      />
     </div>
   );
 }
